@@ -1,0 +1,6 @@
+{
+  "name": "Musicly",
+  "tagline": "Music queuing robot",
+  "body": "### Usage\r\n#### Add to queue\r\nYou can add music to the queue by mentioning musicly and linking a Youtube video\r\n`@musicly https://www.youtube.com/watch?v=dQw4w9WgXcQ`\r\n\r\n#### View queue\r\nYou can view the next 5 songs in the queue to asking about them\r\n`What songs are in the queue?`\r\n\r\n#### View next song\r\nYou can also ask about the next song\r\n`What's the next song?`",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
