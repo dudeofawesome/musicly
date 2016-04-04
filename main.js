@@ -36,7 +36,7 @@ bot.startRTM((err, bot, payload) => {
             res = 'The playlist appears to be empty\n' +
                     'You can be the first ' + emojiPicker('happy') + ' just send me a link';
         } else {
-            for (let i in playlist.queue) {
+            for (let i = 0; i < playlist.queue.length && i < 5; i++) {
                 res += `\n  #${i + 1} "${playlist.queue[i].name}"`;
             }
         }
