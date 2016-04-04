@@ -1,0 +1,30 @@
+{
+  "name": "musicly",
+  "version": "0.0.1",
+  "description": "Music queueing robot",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dudeofawesome/musicly.git"
+  },
+  "keywords": [
+    "music",
+    "slack",
+    "bot",
+    "slackbot",
+    "youtube",
+    "spotify"
+  ],
+  "author": "Louis Orleans <louis@orleans.io> (http://orleans.io/)",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/dudeofawesome/musicly/issues"
+  },
+  "homepage": "https://github.com/dudeofawesome/musicly",
+  "dependencies": {
+    "botkit": "0.0.15"
+  }
+}
