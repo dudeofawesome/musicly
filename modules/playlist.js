@@ -18,12 +18,12 @@ module.exports = (emojiPicker, convert, osascriptCommands, credentials) => {
             child_process.exec(osascriptCommands.openTab(url));
             // TODO: This will cut the video short if it buffers for more than 5 seconds...
             setTimeout(() => {
+                playlist.queue.splice(0, 1);
                 child_process.exec(osascriptCommands.closeTab(url));
                 if (playlist.queue.length > 0) {
                     playlist.startPlayback();
                 }
             }, playlist.queue[0].seconds * 1000 + 5000);
-            playlist.queue.splice(0, 1);
         },
 
         interpretLink: (url) => {

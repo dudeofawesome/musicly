@@ -6,7 +6,7 @@ module.exports = {
                         set myTab to make new tab at end of tabs of window 1
                         set URL of myTab to "${url}"
                     end tell`;
-        return "osascript -e '" + script.split('\n').join("' -e '") + "'";
+        return `osascript -e '${script.split('\n').join(`' -e '`)}'`;
     },
     closeTab: (url) => {
         let script = `tell application "Google Chrome"
@@ -19,6 +19,6 @@ module.exports = {
                             end repeat
                         end repeat
                     end tell`;
-        return "osascript -e '" + script.split('\n').join("' -e '") + "'";
+        return `osascript -e '${script.split('\n').join(' -e ')}'`;
     }
 };
