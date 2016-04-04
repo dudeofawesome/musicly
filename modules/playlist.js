@@ -1,10 +1,30 @@
 'use strict';
 
 var request = require('request');
+var child_process = require('child_process');
 
-module.exports = (emojiPicker, convert, credentials) => {
+module.exports = (emojiPicker, convert, osascriptCommands, credentials) => {
     let playlist = {
         queue: [],
+        addSong: (link) => {
+            playlist.queue.push(link);
+            if (playlist.queue.length === 1) {
+                playlist.startPlayback();
+            }
+        },
+        startPlayback: () => {
+            console.log('playing song ' + playlist.queue[0].name);
+            let url = playlist.queue[0].url;
+            child_process.exec(osascriptCommands.openTab(url));
+            // TODO: This will cut the video short if it buffers for more than 5 seconds...
+            setTimeout(() => {
+                child_process.exec(osascriptCommands.closeTab(url));
+                if (playlist.queue.length > 0) {
+                    playlist.startPlayback();
+                }
+            }, playlist.queue[0].seconds * 1000 + 5000);
+            playlist.queue.splice(0, 1);
+        },
 
         interpretLink: (url) => {
             return new Promise((resolve, reject) => {
@@ -21,8 +41,10 @@ module.exports = (emojiPicker, convert, credentials) => {
                         if (res.statusCode === 200) {
                             body = JSON.parse(body);
                             if (body.items[0]) {
-                                if (convert.ISO8601(body.items[0].contentDetails.duration) / 60 < 10) {
+                                let seconds = convert.ISO8601(body.items[0].contentDetails.duration);
+                                if (seconds / 60 < 10) {
                                     link.name = body.items[0].snippet.title;
+                                    link.seconds = seconds;
                                     resolve({link: link, response: `Added "${link.name}" to the queue ${emojiPicker('good')}`});
                                 } else {
                                     reject(`Whoa there! That video is too darn long!`);

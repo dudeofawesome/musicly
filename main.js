@@ -5,7 +5,8 @@ var controller = botkit.slackbot();
 var credentials = require('./modules/credentials');
 var emojiPicker = require('./modules/emojiPicker');
 var convert = require('./modules/convert');
-var playlist = require('./modules/playlist')(emojiPicker, convert, credentials);
+var osascriptCommands = require('./modules/osascript_commands');
+var playlist = require('./modules/playlist')(emojiPicker, convert, osascriptCommands, credentials);
 
 var bot = controller.spawn({
     token: credentials.slackToken
@@ -47,7 +48,7 @@ bot.startRTM((err, bot, payload) => {
     controller.hears([/((https?):\/\/)?([a-zA-Z0-9]+\.[a-zA-Z0-9])[a-zA-Z0-9\/\\?&#.=]*\w/g], ['direct_message', 'direct_mention', 'mention'], (bot, message) => {
         console.log(JSON.stringify(message));
         playlist.interpretLink(message.match[0]).then((res) => {
-            playlist.queue.push(res.link);
+            playlist.addSong(res.link);
             console.log('RESPONSE: ' + res.response);
             bot.reply(message, res.response);
         }).catch((response) => {
