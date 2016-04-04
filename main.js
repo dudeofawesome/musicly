@@ -8,7 +8,7 @@ var convert = require('./modules/convert');
 var playlist = require('./modules/playlist')(emojiPicker, convert, credentials);
 
 var bot = controller.spawn({
-    token: 'xoxb-31674684961-EnL2rVlyAE2hjxfAFt838TKs'
+    token: credentials.slackToken
 });
 
 bot.startRTM((err, bot, payload) => {
