@@ -57,7 +57,7 @@ module.exports = (emojiPicker, convert, osascriptCommands, credentials) => {
                         }
                     });
                 } else {
-                    reject(`Sorry, I can't handle those kidns of linked quite yet! ${emojiPicker('sorry')}`);
+                    reject(`Sorry, I can't handle those kinds of linked quite yet! ${emojiPicker('sorry')}`);
                 }
             });
         }
