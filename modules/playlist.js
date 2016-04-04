@@ -25,7 +25,7 @@ module.exports = (emojiPicker, convert, credentials) => {
                                     link.name = body.items[0].snippet.title;
                                     resolve({link: link, response: `Added "${link.name}" to the queue ${emojiPicker('good')}`});
                                 } else {
-                                    reject(`Whoa there! That video is too damn long!`);
+                                    reject(`Whoa there! That video is too darn long!`);
                                 }
                             } else {
                                 reject(`Sorry, I couldn't find that song ${emojiPicker('sorry')}`);

@@ -21,33 +21,23 @@ bot.startRTM((err, bot, payload) => {
     // "What is the next song?"
     controller.hears([/what.*next.*(list|song|queue)/], ['direct_message', 'direct_mention', 'mention', 'ambient'], (bot, message) => {
         console.log(JSON.stringify(message));
-        let res = 'Here\'s the next few songs: ';
-        if (!playlist.queue || playlist.queue.length <= 0) {
-            res = 'The playlist appears to be empty,\n' +
-                    'but you can fix that ' + emojiPicker('happy') + '\n' +
-                    'Just send me a link';
-        } else {
-            for (let i in playlist.queue) {
-                if (i > 5) {
-                    break;
-                }
-                res += `\n ${i}. ${playlist.queue[i].name}`;
-            }
+        let res = `It doesn't look like there are any songs in the queue`;
+        if (playlist.queue && playlist.queue.length > 0) {
+            res = `The next song will be "${playlist.queue[0].name}"`;
         }
         bot.reply(message, res);
     });
 
-    // "What songs are in the list?"
+    // "What songs are in the playlist?"
     controller.hears([/what.*(list|song|queue)/], ['direct_message', 'direct_mention', 'mention', 'ambient'], (bot, message) => {
         console.log(JSON.stringify(message));
         let res = 'Playlist: ';
         if (!playlist.queue || playlist.queue.length <= 0) {
             res = 'The playlist appears to be empty\n' +
-                    'You can be the first ' + emojiPicker('happy') + '\n' +
-                    'Just send me a link';
+                    'You can be the first ' + emojiPicker('happy') + ' just send me a link';
         } else {
             for (let i in playlist.queue) {
-                res += '\n  ' + playlist.queue[i].name;
+                res += `\n  #${i + 1} "${playlist.queue[i].name}"`;
             }
         }
         bot.reply(message, res);
