@@ -57,7 +57,7 @@ bot.startRTM((err, bot, payload) => {
     });
 
     // "@musicly Thank you"
-    controller.hears(['thank'], ['direct_message'], (bot, message) => {
+    controller.hears(['thank'], ['direct_message', 'direct_mention'], (bot, message) => {
         console.log(JSON.stringify(message));
         bot.reply(message, 'You\'re welcome!');
     });
