@@ -22,6 +22,12 @@ module.exports = (expression) => {
         case 'music':
             choices = [':musical_note:'];
             return choices[random(choices.length)];
+        case 'heart':
+            choices = [':heart:'];
+            return choices[random(choices.length)];
+        case 'love':
+            choices = [':heart:', ':heartbeat:', ':hearpulse:', ':heart_eyes:', ':heart_eyes_cat:'];
+            return choices[random(choices.length)];
         default:
             return expression;
     }
