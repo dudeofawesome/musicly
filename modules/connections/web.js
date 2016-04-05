@@ -4,7 +4,7 @@ module.exports = (express, app, emojiPicker, playlist) => {
     let web = {
         init: () => {
             return new Promise((resolve, reject) => {
-                app.use(express.static('./pages'));
+                app.use(express.static(`${__dirname}/pages`));
 
                 // "What is the next song?"
                 app.get('/api/next', (req, res) => {
