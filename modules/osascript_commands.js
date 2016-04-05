@@ -8,9 +8,9 @@ module.exports = {
                     end tell`;
         return `osascript -e '${script.split('\n').join(`' -e '`)}'`;
     },
-    closeTab: (url) => {
+    closeTab: (id) => {
         let script = `tell application "Google Chrome"
-                        set windowList to every tab of every window whose URL starts with "${url}"
+                        set windowList to every tab of window 1 whose URL contains "${id}"
                             repeat with tabList in windowList
                                 set tabList to tabList as any
                                 repeat with tabItr in tabList
@@ -19,6 +19,6 @@ module.exports = {
                             end repeat
                         end repeat
                     end tell`;
-        return `osascript -e '${script.split('\n').join(' -e ')}'`;
+        return `osascript -e '${script.split('\n').join(`' -e '`)}'`;
     }
 };

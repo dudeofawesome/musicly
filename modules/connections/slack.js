@@ -50,7 +50,7 @@ module.exports = (playlist, emojiPicker, credentials) => {
                 });
 
                 // "@musicly https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                controller.hears([/((https?):\/\/)?([a-zA-Z0-9]+\.[a-zA-Z0-9])[a-zA-Z0-9\/\\?&#.=]*\w/g], ['direct_message', 'direct_mention', 'mention'], (bot, message) => {
+                controller.hears([/((https?):\/\/)?([a-zA-Z0-9]+\.[a-zA-Z0-9])[a-zA-Z0-9\/\\?&_\-#.=]*\w/g], ['direct_message', 'direct_mention', 'mention'], (bot, message) => {
                     console.log(JSON.stringify(message));
                     playlist.interpretLink(message.match[0]).then((res) => {
                         playlist.addSong(res.link);

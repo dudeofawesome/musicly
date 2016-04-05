@@ -5,5 +5,6 @@ try {
 
 module.exports = {
     youtubeKey: localCredentials.youtubeKey || process.env.YOUTUBEKEY,
+    spotifyToken: localCredentials.spotifyToken || process.env.SPOTIFYTOKEN,
     slackToken: localCredentials.slackToken || process.env.SLACKTOKEN
 };

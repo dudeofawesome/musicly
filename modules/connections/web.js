@@ -44,7 +44,6 @@ module.exports = (express, app, emojiPicker, playlist) => {
                 app.post('/api/url', (req, res) => {
                     playlist.interpretLink(req.body.url).then((res) => {
                         playlist.addSong(res.link);
-                        console.log('RESPONSE: ' + res.response);
                         res.send(res.response);
                     }).catch((text) => {
                         res.send(text);
