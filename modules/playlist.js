@@ -4,6 +4,8 @@ var request = require('request');
 var child_process = require('child_process');
 
 module.exports = (emojiPicker, convert, osascriptCommands, credentials) => {
+    let songStartTime = 0;
+
     let playlist = {
         queue: [],
         addSong: (link) => {
@@ -16,6 +18,7 @@ module.exports = (emojiPicker, convert, osascriptCommands, credentials) => {
             console.log('playing song ' + playlist.queue[0].name);
             let url = playlist.queue[0].url;
             child_process.exec(osascriptCommands.openTab(url));
+            songStartTime = Date.now();
             // TODO: This will cut the video short if it buffers for more than 5 seconds...
             setTimeout(() => {
                 playlist.queue.splice(0, 1);
@@ -60,6 +63,11 @@ module.exports = (emojiPicker, convert, osascriptCommands, credentials) => {
                     reject(`Sorry, I can't handle those kinds of linked quite yet! ${emojiPicker('sorry')}`);
                 }
             });
+        },
+
+        getRemainingTime: () => {
+            console.log(`(${songStartTime} + ${(playlist.queue[0].seconds * 1000)}) - ${Date.now()}`);
+            return (songStartTime + (playlist.queue[0].seconds * 1000)) - Date.now();
         }
     };
 

@@ -44,6 +44,15 @@ bot.startRTM((err, bot, payload) => {
         bot.reply(message, res);
     });
 
+    // "How much time is left on the current song?"
+    controller.hears([/time.*left.*song/], ['direct_message', 'direct_mention', 'mention', 'ambient'], (bot, message) => {
+        console.log(JSON.stringify(message));
+        let timeLeft = new Date(playlist.getRemainingTime());
+        let minutes = Math.round(timeLeft.getMinutes() + (timeLeft.getSeconds() / 60));
+        let res = `The current song has ${minutes} minutes remaining`;
+        bot.reply(message, res);
+    });
+
     // "@musicly https://www.youtube.com/watch?v=dQw4w9WgXcQ"
     controller.hears([/((https?):\/\/)?([a-zA-Z0-9]+\.[a-zA-Z0-9])[a-zA-Z0-9\/\\?&#.=]*\w/g], ['direct_message', 'direct_mention', 'mention'], (bot, message) => {
         console.log(JSON.stringify(message));
