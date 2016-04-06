@@ -1,41 +1,47 @@
+'use strict';
+
 var localCredentials;
 try {
     localCredentials = require('./local_credentials');
 } catch (err) {}
-var remoteCredentials = require('./remote_credentials');
 
-module.exports = {
-    get: (key) => {
-        return new Promise((resolve, reject) => {
-            if (localCredentials && localCredentials[key]) {
-                resolve(localCredentials[key]);
-            } else if (process.env[key.toUpperCase()]) {
-                resolve(process.env[key.toUpperCase()]);
-            } else {
-                remoteCredentials.get(key).then((value) => {
-                    resolve(value);
-                }).catch(() => {
-                    reject();
-                });
-            }
-        });
-    },
-    set: (key, value) => {
-        return new Promise((resolve, reject) => {
-            if (localCredentials || process.env[key.toUpperCase()]) {
-                if (localCredentials) {
-                    localCredentials[key] = value;
+module.exports = (database) => {
+    let credentials = {
+        get: (service) => {
+            return new Promise((resolve, reject) => {
+                if (localCredentials && localCredentials[service]) {
+                    resolve(localCredentials[service]);
+                } else if (process.env[service.toUpperCase()]) {
+                    resolve(process.env[service.toUpperCase()]);
                 } else {
-                    process.env[key.toUpperCase()] = value;
+                    database.getToken(service).then((token) => {
+                        resolve(token);
+                    }).catch(() => {
+                        reject();
+                    });
                 }
-                resolve();
-            } else {
-                remoteCredentials.set(key, value).then(() => {
+            });
+        },
+        set: (service, token) => {
+            return new Promise((resolve, reject) => {
+                if (localCredentials || process.env[service.toUpperCase()]) {
+                    if (localCredentials) {
+                        localCredentials[service] = token;
+                    } else {
+                        process.env[service.toUpperCase()] = token;
+                    }
                     resolve();
-                }).catch(() => {
-                    reject();
-                });
-            }
-        });
-    }
+                } else {
+                    database.setToken(service, token).then(() => {
+                        console.log(`Stored token for ${service}`);
+                        resolve();
+                    }).catch(() => {
+                        reject();
+                    });
+                }
+            });
+        }
+    };
+
+    return credentials;
 };

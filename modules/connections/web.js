@@ -40,6 +40,12 @@ module.exports = (express, app, emojiPicker, playlist) => {
                     res.send(text);
                 });
 
+                // "Skip the current song"
+                app.get('/api/skip', (req, res) => {
+                    playlist.skipSong();
+                    res.send('Alright, skipped!');
+                });
+
                 // "@musicly https://www.youtube.com/watch?v=dQw4w9WgXcQ"
                 app.post('/api/url', (req, res) => {
                     playlist.interpretLink(req.body.url).then((res) => {

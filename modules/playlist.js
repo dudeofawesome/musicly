@@ -4,10 +4,34 @@ var request = require('request');
 var child_process = require('child_process');
 
 module.exports = (emojiPicker, convert, osascriptCommands, credentials) => {
+    let youtubeToken = '';
+    let spotifyToken = '';
     let songStartTime = 0;
+    let currentSongTimeout;
 
     let playlist = {
         queue: [],
+
+        init: () => {
+            new Promise((resolve) => {
+                resolve();
+            });
+        },
+        start: () => {
+            new Promise((resolve) => {
+                Promise.all([credentials.get('youtube'), credentials.get('spotify')]).then((tokens) => {
+                    youtubeToken = tokens[0];
+                    spotifyToken = tokens[1];
+                    resolve();
+                });
+            });
+        },
+        stop: () => {
+            new Promise((resolve) => {
+                resolve();
+            });
+        },
+
         addSong: (link) => {
             playlist.queue.push(link);
             if (playlist.queue.length === 1) {
@@ -16,18 +40,24 @@ module.exports = (emojiPicker, convert, osascriptCommands, credentials) => {
         },
         startPlayback: () => {
             console.log('playing song ' + playlist.queue[0].name);
-            let url = playlist.queue[0].url;
-            let id = playlist.queue[0].id;
-            child_process.exec(osascriptCommands.openTab(url));
+            child_process.exec(osascriptCommands.openTab(playlist.queue[0].url));
             songStartTime = Date.now();
             // TODO: This will cut the video short if it buffers for more than 5 seconds...
-            setTimeout(() => {
-                playlist.queue.splice(0, 1);
-                child_process.exec(osascriptCommands.closeTab(id));
-                if (playlist.queue.length > 0) {
-                    playlist.startPlayback();
-                }
-            }, playlist.queue[0].seconds * 1000 + 5000);
+            currentSongTimeout = setTimeout(playlist.skipSong, playlist.queue[0].seconds * 1000 + 5000);
+        },
+        stopPlayback: () => {
+
+        },
+        skipSong: () => {
+            if (currentSongTimeout) {
+                clearTimeout(currentSongTimeout);
+            }
+            currentSongTimeout = undefined;
+            child_process.exec(osascriptCommands.closeTab(playlist.queue[0].id));
+            playlist.queue.splice(0, 1);
+            if (playlist.queue.length > 0) {
+                playlist.startPlayback();
+            }
         },
 
         interpretLink: (url) => {
@@ -64,7 +94,7 @@ module.exports = (emojiPicker, convert, osascriptCommands, credentials) => {
 
                 switch (link.source) {
                     case 'youtube':
-                        request.get(`https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${link.id}&key=${credentials.get('youtubeKey')}`, (err, res, body) => {
+                        request.get(`https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${link.id}&key=${youtubeToken}`, (err, res, body) => {
                             if (res.statusCode === 200) {
                                 body = JSON.parse(body);
                                 if (body.items[0]) {

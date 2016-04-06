@@ -10,10 +10,6 @@ module.exports = (playlist, emojiPicker, credentials) => {
     let slack = {
         init: () => {
             return new Promise((resolve) => {
-                bot = controller.spawn({
-                    token: credentials.get('slackToken')
-                });
-
                 // "What is the next song?"
                 controller.hears([/what.*next.*(list|song|queue)/i], ['direct_message', 'direct_mention', 'mention', 'mention', 'ambient'], (bot, message) => {
                     console.log(JSON.stringify(message));
@@ -72,14 +68,38 @@ module.exports = (playlist, emojiPicker, credentials) => {
                 // "@musicly set this to that"
                 controller.hears([/set.*to.*/i, /turn.*(on|off)/i], ['direct_message', 'direct_mention', 'mention'], (bot, message) => {
                     console.log(JSON.stringify(message));
-                    let responded = false;
                     admins.forEach((admin) => {
                         if (message.user === admin.id) {
                             console.log(message.match);
                             message.match.forEach((match) => {
-                                bot.reply(message, `I've ${match}`);
+                                let key = '';
+                                let value = '';
+                                if (match.includes('to')) {
+                                    let splitMatch = match.split(' to ');
+                                    key = splitMatch[0];
+                                    let splitKey = key.split(' ');
+                                    key = splitKey[splitKey.length - 1];
+                                    value = splitMatch[1].split(' ')[0];
+                                } else if (match.includes('turn')) {
+                                    let splitMatch = match.split('turn ');
+                                    key = splitMatch[splitMatch.length - 1];
+                                    value = match.includes('on');
+                                }
+                                credentials.set(key, value).then(() => {
+                                    bot.reply(message, `I've set ${key} to ${value}`);
+                                });
                             });
-                            responded = true;
+                        }
+                    });
+                });
+
+                // "@musicly set this to that"
+                controller.hears([/skip.*song/i], ['direct_message', 'direct_mention', 'mention'], (bot, message) => {
+                    console.log(JSON.stringify(message));
+                    admins.forEach((admin) => {
+                        if (message.user === admin.id) {
+                            playlist.skipSong();
+                            bot.reply(message, 'Alright, skipped!');
                         }
                     });
                 });
@@ -89,18 +109,24 @@ module.exports = (playlist, emojiPicker, credentials) => {
         },
         start: () => {
             return new Promise((resolve, reject) => {
-                bot.startRTM((err, bot, payload) => {
-                    if (err) {
-                        reject(new Error('Could not connect to Slack'));
-                    } else {
-                        console.log('Connected to Slack');
-                        payload.users.forEach((user) => {
-                            if (user.is_admin) {
-                                admins.push(user);
-                            }
-                        });
-                        resolve();
-                    }
+                credentials.get('slack').then((token) => {
+                    bot = controller.spawn({
+                        token: token
+                    });
+
+                    bot.startRTM((err, bot, payload) => {
+                        if (err) {
+                            reject(new Error('Could not connect to Slack'));
+                        } else {
+                            console.log('Connected to Slack');
+                            payload.users.forEach((user) => {
+                                if (user.is_admin) {
+                                    admins.push(user);
+                                }
+                            });
+                            resolve();
+                        }
+                    });
                 });
             });
         },
