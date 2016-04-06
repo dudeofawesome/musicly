@@ -64,7 +64,7 @@ module.exports = (emojiPicker, convert, osascriptCommands, credentials) => {
 
                 switch (link.source) {
                     case 'youtube':
-                        request.get(`https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${link.id}&key=${credentials.youtubeKey}`, (err, res, body) => {
+                        request.get(`https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${link.id}&key=${credentials.get('youtubeKey')}`, (err, res, body) => {
                             if (res.statusCode === 200) {
                                 body = JSON.parse(body);
                                 if (body.items[0]) {

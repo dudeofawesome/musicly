@@ -1,19 +1,21 @@
 'use strict';
 
 let botkit = require('botkit');
-let controller = botkit.slackbot();
-let bot;
 
 module.exports = (playlist, emojiPicker, credentials) => {
+    let controller = botkit.slackbot();
+    let bot;
+    let admins = [];
+
     let slack = {
         init: () => {
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
                 bot = controller.spawn({
-                    token: credentials.slackToken
+                    token: credentials.get('slackToken')
                 });
 
                 // "What is the next song?"
-                controller.hears([/what.*next.*(list|song|queue)/], ['direct_message', 'direct_mention', 'mention', 'ambient'], (bot, message) => {
+                controller.hears([/what.*next.*(list|song|queue)/i], ['direct_message', 'direct_mention', 'mention', 'mention', 'ambient'], (bot, message) => {
                     console.log(JSON.stringify(message));
                     let res = `It doesn't look like there are any songs in the queue`;
                     if (playlist.queue && playlist.queue.length > 1) {
@@ -23,7 +25,7 @@ module.exports = (playlist, emojiPicker, credentials) => {
                 });
 
                 // "What songs are in the playlist?"
-                controller.hears([/what.*(list|song|queue)/], ['direct_message', 'direct_mention', 'mention', 'ambient'], (bot, message) => {
+                controller.hears([/what.*(list|song|queue)/i], ['direct_message', 'direct_mention', 'mention', 'mention', 'ambient'], (bot, message) => {
                     console.log(JSON.stringify(message));
                     let res = 'Playlist: ';
                     if (!playlist.queue || playlist.queue.length <= 0) {
@@ -38,7 +40,7 @@ module.exports = (playlist, emojiPicker, credentials) => {
                 });
 
                 // "How much time is left on the current song?"
-                controller.hears([/time.*left.*song/], ['direct_message', 'direct_mention', 'mention', 'ambient'], (bot, message) => {
+                controller.hears([/time.*left.*song/i], ['direct_message', 'direct_mention', 'mention', 'mention', 'ambient'], (bot, message) => {
                     console.log(JSON.stringify(message));
                     let timeLeft = new Date(playlist.getRemainingTime());
                     let minutes = Math.round(timeLeft.getMinutes() + (timeLeft.getSeconds() / 60));
@@ -50,7 +52,7 @@ module.exports = (playlist, emojiPicker, credentials) => {
                 });
 
                 // "@musicly https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                controller.hears([/((https?):\/\/)?([a-zA-Z0-9]+\.[a-zA-Z0-9])[a-zA-Z0-9\/\\?&_\-#.=]*\w/g], ['direct_message', 'direct_mention', 'mention'], (bot, message) => {
+                controller.hears([/((https?):\/\/)?([a-zA-Z0-9]+\.[a-zA-Z0-9])[a-zA-Z0-9\/\\?&_\-#.=]*\w/ig], ['direct_message', 'direct_mention', 'mention', 'mention'], (bot, message) => {
                     console.log(JSON.stringify(message));
                     playlist.interpretLink(message.match[0]).then((res) => {
                         playlist.addSong(res.link);
@@ -62,9 +64,24 @@ module.exports = (playlist, emojiPicker, credentials) => {
                 });
 
                 // "@musicly Thank you"
-                controller.hears(['thank'], ['direct_message', 'direct_mention'], (bot, message) => {
+                controller.hears(['thank'], ['direct_message', 'direct_mention', 'mention'], (bot, message) => {
                     console.log(JSON.stringify(message));
                     bot.reply(message, 'You\'re welcome!');
+                });
+
+                // "@musicly set this to that"
+                controller.hears([/set.*to.*/i, /turn.*(on|off)/i], ['direct_message', 'direct_mention', 'mention'], (bot, message) => {
+                    console.log(JSON.stringify(message));
+                    let responded = false;
+                    admins.forEach((admin) => {
+                        if (message.user === admin.id) {
+                            console.log(message.match);
+                            message.match.forEach((match) => {
+                                bot.reply(message, `I've ${match}`);
+                            });
+                            responded = true;
+                        }
+                    });
                 });
 
                 resolve();
@@ -74,17 +91,22 @@ module.exports = (playlist, emojiPicker, credentials) => {
             return new Promise((resolve, reject) => {
                 bot.startRTM((err, bot, payload) => {
                     if (err) {
-                        throw new Error('Could not connect to Slack');
-                        reject();
+                        reject(new Error('Could not connect to Slack'));
                     } else {
                         console.log('Connected to Slack');
+                        payload.users.forEach((user) => {
+                            if (user.is_admin) {
+                                admins.push(user);
+                            }
+                        });
                         resolve();
                     }
                 });
             });
         },
         stop: () => {
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
+                bot.closeRTM();
                 resolve();
             });
         }
