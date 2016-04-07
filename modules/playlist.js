@@ -45,7 +45,12 @@ module.exports = (emojiPicker, convert, playbackControl, credentials) => {
             currentSongTimeout = setTimeout(playlist.skipSong, playlist.queue[0].seconds * 1000 + 5000);
         },
         stopPlayback: () => {
-
+            if (currentSongTimeout) {
+                clearTimeout(currentSongTimeout);
+            }
+            currentSongTimeout = undefined;
+            child_process.exec(osascriptCommands.closeTab(playlist.queue[0].id));
+            playlist.queue.splice(0, 1);
         },
         skipSong: () => {
             if (currentSongTimeout) {
