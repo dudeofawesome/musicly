@@ -34,7 +34,7 @@ module.exports = (database) => {
                 } else {
                     database.setToken(service, token).then(() => {
                         console.log(`Stored token for ${service}`);
-                        resolve();
+                        resolve(`Stored token for ${service}`);
                     }).catch(() => {
                         reject();
                     });

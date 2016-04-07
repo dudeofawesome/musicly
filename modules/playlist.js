@@ -1,9 +1,8 @@
 'use strict';
 
 var request = require('request');
-var child_process = require('child_process');
 
-module.exports = (emojiPicker, convert, osascriptCommands, credentials) => {
+module.exports = (emojiPicker, convert, playbackControl, credentials) => {
     let youtubeToken = '';
     let spotifyToken = '';
     let songStartTime = 0;
@@ -40,7 +39,7 @@ module.exports = (emojiPicker, convert, osascriptCommands, credentials) => {
         },
         startPlayback: () => {
             console.log('playing song ' + playlist.queue[0].name);
-            child_process.exec(osascriptCommands.openTab(playlist.queue[0].url));
+            playbackControl.start(playlist.queue[0].service, playlist.queue[0].id);
             songStartTime = Date.now();
             // TODO: This will cut the video short if it buffers for more than 5 seconds...
             currentSongTimeout = setTimeout(playlist.skipSong, playlist.queue[0].seconds * 1000 + 5000);
@@ -53,7 +52,7 @@ module.exports = (emojiPicker, convert, osascriptCommands, credentials) => {
                 clearTimeout(currentSongTimeout);
             }
             currentSongTimeout = undefined;
-            child_process.exec(osascriptCommands.closeTab(playlist.queue[0].id));
+            playbackControl.stop(playlist.queue[0].service, playlist.queue[0].id);
             playlist.queue.splice(0, 1);
             if (playlist.queue.length > 0) {
                 playlist.startPlayback();
@@ -66,23 +65,23 @@ module.exports = (emojiPicker, convert, osascriptCommands, credentials) => {
                 let link = {
                     name: url,
                     url: url,
-                    source: url,
+                    service: url,
                     id: url
                 };
                 if (lowURL.includes('youtube')) {
-                    link.source = 'youtube';
+                    link.service = 'youtube';
                     // https://www.youtube.com/watch?v=dQw4w9WgXcQ
                     let splitURL = url.split('v=');
                     link.id = splitURL[splitURL.length - 1];
                     link.id = link.id.split('&')[0];
                 } else if (lowURL.includes('youtu.be')) {
-                    link.source = 'youtube';
+                    link.service = 'youtube';
                     // https://youtu.be/dQw4w9WgXcQ
                     let splitURL = url.split('/');
                     link.id = splitURL[splitURL.length - 1];
                     link.id = link.id.split('?')[0];
                 } else if (lowURL.includes('spotify')) {
-                    link.source = 'spotify';
+                    link.service = 'spotify';
                     // https://play.spotify.com/track/7GhIk7Il098yCjg4BQjzvb
                     let splitURL = url.split('track/');
                     link.id = splitURL[splitURL.length - 1];
@@ -92,7 +91,7 @@ module.exports = (emojiPicker, convert, osascriptCommands, credentials) => {
                     return reject(`Sorry, I can't handle those kinds of linked quite yet! ${emojiPicker('sorry')}`);
                 }
 
-                switch (link.source) {
+                switch (link.service) {
                     case 'youtube':
                         request.get(`https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${link.id}&key=${youtubeToken}`, (err, res, body) => {
                             if (res.statusCode === 200) {
@@ -123,7 +122,6 @@ module.exports = (emojiPicker, convert, osascriptCommands, credentials) => {
                                     if (seconds / 60 < 10) {
                                         link.name = body.name;
                                         link.url = `${body.external_urls.spotify}?play=true`;
-                                        link.id = body.album.id;
                                         link.seconds = seconds;
                                         return resolve({link: link, response: `Added "${link.name}" to the queue ${emojiPicker('good')}`});
                                     } else {

@@ -4,8 +4,8 @@ var database = require('./modules/database');
 var credentials = require('./modules/credentials')(database);
 var emojiPicker = require('./modules/emojiPicker');
 var convert = require('./modules/convert');
-var osascriptCommands = require('./modules/osascript_commands');
-var playlist = require('./modules/playlist')(emojiPicker, convert, osascriptCommands, credentials);
+var playbackControl = require('./modules/playback_control');
+var playlist = require('./modules/playlist')(emojiPicker, convert, playbackControl, credentials);
 
 var express = require('express');
 var app = express();
