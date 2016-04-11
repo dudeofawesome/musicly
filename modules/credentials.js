@@ -9,15 +9,14 @@ module.exports = (database) => {
     let credentials = {
         get: (service) => {
             return new Promise((resolve, reject) => {
-                if (localCredentials && localCredentials[service]) {
-                    resolve(localCredentials[service]);
-                } else if (process.env[service.toUpperCase()]) {
+                if (process.env[service.toUpperCase()]) {
                     resolve(process.env[service.toUpperCase()]);
                 } else {
                     database.getToken(service).then((token) => {
                         resolve(token);
                     }).catch(() => {
-                        reject();
+                        // Even if we don't find the key, we want to resolve so that we can use Promise.all
+                        resolve();
                     });
                 }
             });

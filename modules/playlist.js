@@ -1,6 +1,7 @@
 'use strict';
 
 var request = require('request');
+var child_process = require('child_process');
 
 module.exports = (emojiPicker, convert, playbackControl, credentials) => {
     let youtubeToken = '';
@@ -22,6 +23,9 @@ module.exports = (emojiPicker, convert, playbackControl, credentials) => {
                     youtubeToken = tokens[0];
                     spotifyToken = tokens[1];
                     resolve();
+                }).catch((err) => {
+                    console.log('ERR');
+                    console.log(err);
                 });
             });
         },
@@ -98,6 +102,7 @@ module.exports = (emojiPicker, convert, playbackControl, credentials) => {
 
                 switch (link.service) {
                     case 'youtube':
+                        console.log(`https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${link.id}&key=${youtubeToken}`);
                         request.get(`https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${link.id}&key=${youtubeToken}`, (err, res, body) => {
                             if (res.statusCode === 200) {
                                 body = JSON.parse(body);
