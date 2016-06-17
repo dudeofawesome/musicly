@@ -1,21 +1,22 @@
 'use strict';
 
-var database = require('./modules/database');
-var credentials = require('./modules/credentials')(database);
-var emojiPicker = require('./modules/emojiPicker');
-var convert = require('./modules/convert');
-var playbackControl = require('./modules/playback_control');
-var playlist = require('./modules/playlist')(emojiPicker, convert, playbackControl, credentials);
+const database = require('./modules/database');
+const credentials = require('./modules/credentials')(database);
+const emojiPicker = require('./modules/emojiPicker');
+const convert = require('./modules/convert');
+const playbackControl = require('./modules/playback_control');
+const playlist = require('./modules/playlist')(emojiPicker, convert, playbackControl, credentials);
 
-var express = require('express');
-var app = express();
-var bodyParser = require('body-parser');
+const express = require('express');
+const app = express();
+const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-var admin = require('./modules/admin')(express, app, credentials);
+const admin = require('./modules/admin')(express, app, credentials);
 
-var connections = {
+const connections = {
+    messenger: require('./modules/connections/messenger')(playlist, emojiPicker, credentials),
     slack: require('./modules/connections/slack')(playlist, emojiPicker, credentials),
     web: require('./modules/connections/web')(express, app, emojiPicker, playlist)
 };
