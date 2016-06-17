@@ -3,36 +3,23 @@
 var os = require('os');
 var nedb = require('nedb');
 var db = [
-    'services'
+    'credentials'
 ];
 
 module.exports = {
-    init: () => {
-        return new Promise((resolve, reject) => {
-            let path;
-            switch (process.platform) {
-                case 'darwin':
-                    path = `${os.homedir()}/Library/Application Support/io.orleans.musicly/settings`;
-                    break;
-                case 'linux':
-                    path = `${os.homedir()}/usr/local/share/io.orleans.musicly/settings`;
-                    break;
-                case 'win32':
-                    path = `${os.homedir()}/AppData/Local/io.orleans.musicly/settings`;
-                    break;
-                default:
-                    path = `${os.homedir()}/usr/local/share/io.orleans.musicly/settings`;
-            }
-            db.forEach((collection) => {
+    init: function () {
+        return new Promise(function (resolve) {
+            var path = `${os.homedir()}/usr/local/share/wifi-setup/settings`;
+            db.forEach(function (collection) {
                 db[collection] = new nedb({filename: `${path}/${collection}`});
             });
 
             resolve();
         });
     },
-    start: () => {
-        return new Promise((resolve, reject) => {
-            db.services.loadDatabase((err) => {
+    start: function () {
+        return new Promise(function (resolve, reject) {
+            db.services.loadDatabase(function (err) {
                 if (err) {
                     console.log(err);
                     reject(err);
@@ -43,15 +30,15 @@ module.exports = {
             });
         });
     },
-    stop: () => {
-        return new Promise((resolve, reject) => {
+    stop: function () {
+        return new Promise(function (resolve) {
             resolve();
         });
     },
 
-    getToken: (serviceName) => {
-        return new Promise((resolve, reject) => {
-            db.services.findOne({name: serviceName}, {token: 1}, (err, service) => {
+    getToken: function (serviceName) {
+        return new Promise(function (resolve, reject) {
+            db.services.findOne({name: serviceName}, {token: 1}, function (err, service) {
                 if (err || !service) {
                     console.log(err);
                     reject(err);
@@ -61,9 +48,9 @@ module.exports = {
             });
         });
     },
-    setToken: (serviceName, token) => {
-        return new Promise((resolve, reject) => {
-            db.services.update({name: serviceName}, {$set: {token: token}}, {upsert: true}, (err) => {
+    setToken: function (serviceName, token) {
+        return new Promise(function (resolve, reject) {
+            db.services.update({name: serviceName}, {$set: {token: token}}, {upsert: true}, function (err) {
                 if (err) {
                     reject(err);
                 } else {
