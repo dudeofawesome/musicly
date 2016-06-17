@@ -3,13 +3,27 @@
 var os = require('os');
 var nedb = require('nedb');
 var db = [
-    'credentials'
+    'credentials',
+    'services'
 ];
 
 module.exports = {
     init: function () {
         return new Promise(function (resolve) {
-            var path = `${os.homedir()}/usr/local/share/wifi-setup/settings`;
+            let path;
+            switch (process.platform) {
+                case 'darwin':
+                    path = `${os.homedir()}/Library/Application Support/io.orleans.musicly/settings`;
+                    break;
+                case 'linux':
+                    path = `${os.homedir()}/usr/local/share/io.orleans.musicly/settings`;
+                    break;
+                case 'win32':
+                    path = `${os.homedir()}/AppData/Local/io.orleans.musicly/settings`;
+                    break;
+                default:
+                    path = `${os.homedir()}/usr/local/share/io.orleans.musicly/settings`;
+            }
             db.forEach(function (collection) {
                 db[collection] = new nedb({filename: `${path}/${collection}`});
             });
