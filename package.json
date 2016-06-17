@@ -28,8 +28,8 @@
   "homepage": "https://github.com/dudeofawesome/musicly",
   "dependencies": {
     "bluebird": "^3.4.0",
-    "body-parser": "1.15.0",
-    "botkit": "0.0.15",
+    "body-parser": "^1.15.0",
+    "botkit": "^0.2.1",
     "chalk": "^1.1.3",
     "express": "^4.13.4",
     "gulp": "^3.9.1",
