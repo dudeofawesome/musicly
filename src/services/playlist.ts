@@ -1,9 +1,9 @@
-'use strict';
+import {EmojiPicker} from './emoji-picker';
 
 var request = require('request');
 var child_process = require('child_process');
 
-module.exports = (emojiPicker, convert, playbackControl, credentials) => {
+module.exports = (convert, playbackControl, credentials) => {
     let youtubeToken = '';
     let spotifyToken = '';
     let songStartTime = 0;
@@ -97,7 +97,7 @@ module.exports = (emojiPicker, convert, playbackControl, credentials) => {
                     link.id = link.id.split('?')[0];
                     // TODO: maybe use this for playback: https://developer.spotify.com/technologies/widgets/spotify-play-button/
                 } else {
-                    return reject(`Sorry, I can't handle those kinds of linked quite yet! ${emojiPicker('sorry')}`);
+                    return reject(`Sorry, I can't handle those kinds of linked quite yet! ${EmojiPicker('sorry')}`);
                 }
 
                 switch (link.service) {
@@ -111,15 +111,15 @@ module.exports = (emojiPicker, convert, playbackControl, credentials) => {
                                     if (seconds / 60 < 10) {
                                         link.name = body.items[0].snippet.title;
                                         link.seconds = seconds;
-                                        return resolve({link: link, response: `Added "${link.name}" to the queue ${emojiPicker('good')}`});
+                                        return resolve({link: link, response: `Added "${link.name}" to the queue ${EmojiPicker('good')}`});
                                     } else {
                                         return reject(`Whoa there! That video is too darn long!`);
                                     }
                                 } else {
-                                    return reject(`Sorry, I couldn't find that song ${emojiPicker('sorry')}`);
+                                    return reject(`Sorry, I couldn't find that song ${EmojiPicker('sorry')}`);
                                 }
                             } else {
-                                return reject(`Sorry, I couldn't find that song ${emojiPicker('sorry')}`);
+                                return reject(`Sorry, I couldn't find that song ${EmojiPicker('sorry')}`);
                             }
                         });
                         break;
@@ -133,15 +133,15 @@ module.exports = (emojiPicker, convert, playbackControl, credentials) => {
                                         link.name = body.name;
                                         link.url = `${body.external_urls.spotify}?play=true`;
                                         link.seconds = seconds;
-                                        return resolve({link: link, response: `Added "${link.name}" to the queue ${emojiPicker('good')}`});
+                                        return resolve({link: link, response: `Added "${link.name}" to the queue ${EmojiPicker('good')}`});
                                     } else {
                                         return reject(`Whoa there! That video is too darn long!`);
                                     }
                                 } else {
-                                    return reject(`Sorry, I couldn't find that song ${emojiPicker('sorry')}`);
+                                    return reject(`Sorry, I couldn't find that song ${EmojiPicker('sorry')}`);
                                 }
                             } else {
-                                return reject(`Sorry, I couldn't find that song ${emojiPicker('sorry')}`);
+                                return reject(`Sorry, I couldn't find that song ${EmojiPicker('sorry')}`);
                             }
                         });
                         break;

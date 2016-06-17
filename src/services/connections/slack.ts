@@ -1,8 +1,8 @@
-'use strict';
+import {EmojiPicker} from '../emoji-picker';
 
-let botkit = require('botkit');
+const botkit = require('botkit');
 
-module.exports = (playlist, emojiPicker, credentials) => {
+module.exports = (playlist, credentials) => {
     let controller = botkit.slackbot();
     let bot;
     let admins = [];
@@ -25,8 +25,7 @@ module.exports = (playlist, emojiPicker, credentials) => {
                     console.log(JSON.stringify(message));
                     let res = 'Playlist: ';
                     if (!playlist.queue || playlist.queue.length <= 0) {
-                        res = 'The playlist appears to be empty\n' +
-                                'You can be the first ' + emojiPicker('happy') + ' just send me a link';
+                        res = `The playlist appears to be empty\nYou can be the first ${EmojiPicker('happy')} just send me a link`;
                     } else {
                         for (let i = 0; i < playlist.queue.length && i < 5; i++) {
                             res += `\n  #${i + 1} "${playlist.queue[i].name}"`;

@@ -1,6 +1,6 @@
-'use strict';
+import {EmojiPicker} from '../emoji-picker';
 
-module.exports = (express, app, emojiPicker, playlist) => {
+module.exports = (express, app, playlist) => {
     let web = {
         init: () => {
             return new Promise((resolve, reject) => {
@@ -20,7 +20,7 @@ module.exports = (express, app, emojiPicker, playlist) => {
                     let text = `Playlist: `;
                     if (!playlist.queue || playlist.queue.length <= 0) {
                         text = 'The playlist appears to be empty\n' +
-                                'You can be the first ' + emojiPicker('happy', true) + ' just send me a link';
+                                'You can be the first ' + EmojiPicker('happy', true) + ' just send me a link';
                     } else {
                         for (let i = 0; i < playlist.queue.length && i < 5; i++) {
                             text += `\n  #${i + 1} "${playlist.queue[i].name}"`;

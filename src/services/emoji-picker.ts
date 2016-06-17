@@ -1,14 +1,12 @@
-'use strict';
-
-function random (max, min) {
+function random (max: number, min?: number): number {
     if (!min) {
         min = 0;
     }
     return Math.floor((Math.random() * (max - min)) + min);
 }
 
-module.exports = (expression, unicode) => {
-    let choices = [];
+export function EmojiPicker (expression: string, unicode: boolean = false) {
+    let choices: Array<string> = [];
     switch (expression) {
         case 'sorry':
             choices = (!unicode) ? [':disappointed:', ':cry:', ':sob:'] : ['😞', '😢', '😭'];
@@ -23,7 +21,7 @@ module.exports = (expression, unicode) => {
             choices = (!unicode) ? [':musical_note:'] : ['🎵', '🎶'];
             return choices[random(choices.length)];
         case 'heart':
-            choices = (!unicode) ? [':heart:'] : ['♥️'];
+            choices = (!unicode) ? [':heart:', ':heartbeat:'] : ['♥️', '💓'];
             return choices[random(choices.length)];
         case 'love':
             choices = (!unicode) ? [':heart:', ':heartbeat:', ':hearpulse:', ':heart_eyes:', ':heart_eyes_cat:'] : ['♥️', '💓', '💗', '😍', '😻', '💝'];

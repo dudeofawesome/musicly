@@ -1,11 +1,10 @@
 'use strict';
 
-const database = require('./modules/database');
-const credentials = require('./modules/credentials')(database);
-const emojiPicker = require('./modules/emojiPicker');
-const convert = require('./modules/convert');
-const playbackControl = require('./modules/playback_control');
-const playlist = require('./modules/playlist')(emojiPicker, convert, playbackControl, credentials);
+const database = require('./services/database');
+const credentials = require('./services/credentials')(database);
+const convert = require('./services/convert');
+const playbackControl = require('./services/playback_control');
+const playlist = require('./services/playlist')(convert, playbackControl, credentials);
 
 const express = require('express');
 const app = express();
@@ -13,12 +12,12 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-const admin = require('./modules/admin')(express, app, credentials);
+const admin = require('./services/admin')(express, app, credentials);
 
 const connections = {
-    messenger: require('./modules/connections/messenger')(playlist, emojiPicker, credentials),
-    slack: require('./modules/connections/slack')(playlist, emojiPicker, credentials),
-    web: require('./modules/connections/web')(express, app, emojiPicker, playlist)
+    messenger: require('./services/connections/messenger')(playlist, credentials),
+    slack: require('./services/connections/slack')(playlist, credentials),
+    web: require('./services/connections/web')(express, app, playlist)
 };
 
 Promise.all([
